@@ -9,6 +9,13 @@ export const AuthProvider = (props) => {
   const [isLogin, setIsLogin] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
+    useEffect(() => {
+    const storedUser = JSON.parse(sessionStorage.getItem("user"));
+    setUser(storedUser || null);
+    setIsLogin(!!storedUser);
+    setIsAdmin(storedUser?.role === "Admin");
+  }, []);
+
   useEffect(() => {
     // setIsLogin(!!user);
     // setIsAdmin(user?.role === "Admin");

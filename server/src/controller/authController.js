@@ -2,6 +2,7 @@ import User from "../models/userModel.js"
 import bcrypt from "bcrypt"
 import generateToken from "../config/jwtToken.js";
 import cloudinary from "../config/cloudinary.js";
+
 export const userRegister = async (req, res, next) => {
   try {
     const { name, email, phone, password, gender, dob } = req.body;
@@ -76,8 +77,9 @@ export const userLogin = async (req, res, next) => {
     // Send the user data along with the token in the response
     res.status(200).json({
       success: true,
-      message: "User logged in successfully",
+      message: "Logged in successfully",
       user:{
+        _id: user._id,
         name:user.name,
         email:user.email,
         phone:user.phone,
@@ -95,14 +97,12 @@ export const userLogin = async (req, res, next) => {
   }
 };
 
-
-
 export const userLogout = async (req, res, next) => {
   try {
     res.clearCookie("jwt");
     res.status(200).json({
       success: true,
-      message: "User logged out successfully",
+      message: "Logged out successfully",
     });
   } catch (error) {
     console.log(error);
@@ -110,11 +110,11 @@ export const userLogout = async (req, res, next) => {
   }
 };
 
-
 export const userUpdate= async (req,res,next)=>{
   try{
     const { name, phone, gender, dob } = req.body;
     const userId = req.user._id;
+    
     if (!name || !phone || !gender || !dob) {
       const error = new Error("All fields are required");
       error.statusCode = 400;
@@ -155,9 +155,6 @@ export const userUpdate= async (req,res,next)=>{
             )}`;
           }
         }
-    
-
-    
 
     const updatedUser= await User.findByIdAndUpdate(
       userId ,
@@ -170,6 +167,7 @@ export const userUpdate= async (req,res,next)=>{
     res.status(200).json({  success: true,
       message: "User updated successfully",
       user: {
+            _id: updatedUser._id, 
         name: updatedUser.name,
         email: updatedUser.email,
         phone: updatedUser.phone,
@@ -185,9 +183,6 @@ export const userUpdate= async (req,res,next)=>{
     next(error);
   }
 };
-
-
-
 
 export const userDelete = async (req, res, next) => {
   try {
@@ -213,4 +208,44 @@ export const userDelete = async (req, res, next) => {
     console.log(error);
     next(error);
   }
+};
+
+export const userAddresses = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('addresses');
+      if (!user) {
+      return res.status(404).json({ 
+        success: false,
+        message: "User not found" 
+      });
+    }
+     res.status(200).json({
+      success: true,
+      addresses: user.addresses
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch addresses" });
+  }
+};
+
+export const getUser =(req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Not authenticated" });
+  }
+
+  // Send back user info excluding sensitive data
+  res.json({
+    success: true,
+    user: {
+      id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      phone: req.user.phone,
+      gender: req.user.gender,
+      dob: req.user.dob,
+      status: req.user.status,
+      role: req.user.role,
+      profilePic: req.user.profilePic,
+    },
+  });
 };

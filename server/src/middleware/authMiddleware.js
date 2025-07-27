@@ -8,6 +8,7 @@ export const userProtect = async (req, res, next) => {
 
   if (token) {
     try {
+      //console.log("Token received:", token); 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const user = await User.findById(decoded.key);
       req.user = user;

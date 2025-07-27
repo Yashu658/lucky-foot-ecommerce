@@ -1,5 +1,17 @@
 import mongoose from "mongoose";
 
+// Embedded Address Schema
+const addressSchema = new mongoose.Schema({
+  homeNumber: String,
+  street: String,
+  landmark: String,
+  city: String,
+  state: String,
+  zip: String,
+  phone:String,
+}, { _id: true }); // Keep _id if you want to delete/update specific addresses
+
+// Main User Schema
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -52,6 +64,8 @@ const userSchema = mongoose.Schema(
       enum: ["Active", "Inactive", "Blocked"],
       default: "Active",
     },
+       //Embedded array of addresses
+    addresses: [addressSchema],
   },
   { timestamps: true }
 );

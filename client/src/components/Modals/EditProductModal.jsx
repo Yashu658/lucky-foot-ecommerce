@@ -2,18 +2,21 @@ import { useState, useEffect } from "react";
 import { IoMdClose } from "react-icons/io";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
 import axios from "../../config/api";
+import DescriptionEditor from "./DescriptionEditor";
 
 const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
   const [formData, setFormData] = useState({
     name: "",
     mrp: "",
     discount: "",
-    description: "",
+    description: {},
     category: "",
     subCategory: "",
     rating: 0,
     color: "",
     brand: "",
+    gender: "unisex",
+    status: "active"
   });
 
   const [images, setImages] = useState([]);
@@ -27,12 +30,17 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
         name: product.name,
         mrp: product.mrp,
         discount: product.discount,
-        description: product.description,
+      description:
+  product.description && typeof product.description === "string"
+    ? JSON.parse(product.description)
+    : product.description || {},
         category: product.category,
         subCategory: product.subCategory,
         rating: product.rating,
         color: product.color,
         brand: product.brand,
+        gender: product.gender,
+        status: product.status
       });
       setStockList(product.size);
       setExistingImages(product.image || []);
@@ -79,12 +87,27 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
     try {
       const formDataToSend = new FormData();
 
-      Object.keys(formData).forEach((key) => {
-        formDataToSend.append(key, formData[key]);
+      // Append all form data
+     Object.keys(formData).forEach((key) => {
+        const newValue = formData[key];
+        const oldValue = product[key];
+        const hasChanged =
+          typeof newValue === "object"
+            ? JSON.stringify(newValue) !== JSON.stringify(oldValue)
+            : newValue !== oldValue;
+
+        if (hasChanged) {
+          formDataToSend.append(
+            key,
+            typeof newValue === "object" ? JSON.stringify(newValue) : newValue
+          );
+        }
       });
 
+      // Append size/stock data
       formDataToSend.append("size", JSON.stringify(stockList));
 
+      // Handle images
       if (images.length > 0) {
         images.forEach((image) => {
           formDataToSend.append("images", image);
@@ -95,7 +118,12 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
 
       const response = await axios.put(
         `/api/admin/updateProduct/${product._id}`,
-        formDataToSend
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       onProductUpdated(response.data.product);
@@ -103,7 +131,7 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
       alert("Product updated successfully!");
     } catch (error) {
       console.error("Error updating product:", error);
-      alert("Failed to update product");
+      alert(`Failed to update product: ${error.response?.data?.message || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -112,132 +140,136 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
   if (!isOpen || !product) return null;
 
   return (
-    <div className="fixed inset-0 bg-secondary flex items-center justify-center z-5 mt-15">
-      <div className="bg-secondary rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-xl p-6 mt-18 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-secondary-content">
-            Edit Product
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-secondary-content hover:text-error"
-          >
+          <h2 className="text-2xl font-bold text-gray-900">Edit Product</h2>
+          <button onClick={onClose} className="text-gray-700 hover:text-red-600">
             <IoMdClose size={24} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-secondary-content mb-1">
-              Name
-            </label>
+            <label className="block text-sm font-medium text-gray-800 mb-1">Name</label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full border border-secondary-content rounded-lg p-2 text-secondary-content"
+              className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
               required
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-secondary-content mb-1">
-                Brand
-              </label>
+              <label className="block text-sm font-medium text-gray-800 mb-1">Brand</label>
               <input
                 type="text"
                 name="brand"
                 value={formData.brand}
                 onChange={handleInputChange}
-                className="w-full border border-secondary-content rounded-lg p-2 text-secondary-content"
+                className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-secondary-content mb-1">
-                MRP
-              </label>
+              <label className="block text-sm font-medium text-gray-800 mb-1">MRP</label>
               <input
                 type="number"
                 name="mrp"
                 value={formData.mrp}
                 onChange={handleInputChange}
-                className="w-full border border-secondary-content rounded-lg p-2 text-secondary-content"
+                className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-secondary-content mb-1">
-                Discount (%)
-              </label>
+              <label className="block text-sm font-medium text-gray-800 mb-1">Discount (%)</label>
               <input
                 type="number"
                 name="discount"
                 value={formData.discount}
                 onChange={handleInputChange}
-                className="w-full border border-secondary-content rounded-lg p-2 text-secondary-content"
+                className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-secondary-content mb-1">
-                Category
-              </label>
+              <label className="block text-sm font-medium text-gray-800 mb-1">Category</label>
               <input
                 type="text"
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="w-full border border-secondary-content rounded-lg p-2 text-secondary-content"
+                className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-secondary-content mb-1">
-                Sub Category
-              </label>
+              <label className="block text-sm font-medium text-gray-800 mb-1">Sub Category</label>
               <input
                 type="text"
                 name="subCategory"
                 value={formData.subCategory}
                 onChange={handleInputChange}
-                className="w-full border border-secondary-content rounded-lg p-2 text-secondary-content"
+                className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-secondary-content mb-1">
-                Color
-              </label>
+              <label className="block text-sm font-medium text-gray-800 mb-1">Color</label>
               <input
                 type="text"
                 name="color"
                 value={formData.color}
                 onChange={handleInputChange}
-                className="w-full border border-secondary-content rounded-lg p-2 text-secondary-content"
+                className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-800 mb-1">Gender</label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleInputChange}
+                className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
+                required
+              >
+                <option value="men">Men</option>
+                <option value="women">Women</option>
+                <option value="kids">Kids</option>
+                <option value="unisex">Unisex</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-800 mb-1">Status</label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleInputChange}
+                className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
+                required
+              >
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
             </div>
           </div>
 
           <div>
-            <div className="flex justify-between">
-              <label className="block text-sm font-medium text-secondary-content mb-1">
-                Size & Stock
-              </label>
-              <button
-                className="flex justify-center gap-3 items-center border border-info p-1 rounded bg-info/80 text-info-content"
-                onClick={handleAddStock}
-              >
-                <FiPlus /> Add more Stock
-              </button>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-800">Size & Stock</label>
+              
             </div>
 
             <div className="space-y-3">
@@ -246,20 +278,16 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
                   <input
                     type="text"
                     value={item.size}
-                    onChange={(e) =>
-                      handleStockChange(index, "size", e.target.value)
-                    }
-                    className="border border-secondary-content rounded-lg p-2 text-secondary-content"
+                    onChange={(e) => handleStockChange(index, "size", e.target.value)}
+                    className="border border-gray-700 rounded-lg p-2 text-gray-900"
                     placeholder="Size"
                     required
                   />
                   <input
                     type="number"
                     value={item.quantity}
-                    onChange={(e) =>
-                      handleStockChange(index, "quantity", e.target.value)
-                    }
-                    className="border border-secondary-content rounded-lg p-2 text-secondary-content"
+                    onChange={(e) => handleStockChange(index, "quantity", e.target.value)}
+                    className="border border-gray-700 rounded-lg p-2 text-gray-900"
                     placeholder="Stock"
                     required
                   />
@@ -267,57 +295,52 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
                     <button
                       type="button"
                       onClick={() => handleRemoveStock(index)}
-                      className="p-2 text-error hover:bg-error hover:text-error-content rounded"
+                      className="p-2 text-red-600 hover:bg-red-600 hover:text-white rounded"
                     >
                       <FiTrash2 />
                     </button>
                   )}
                 </div>
               ))}
+              <button
+                className="flex items-center gap-2 text-blue-500 p-1 rounded  hover:bg-blue-600"
+                onClick={handleAddStock}
+              >
+                <FiPlus /> Add more Stock
+              </button>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-secondary-content mb-1">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              rows="4"
-              className="w-full border border-secondary-content rounded-lg p-2 text-secondary-content"
-              required
-            ></textarea>
+            <label className="block text-sm font-medium text-gray-800 mb-1">Description</label>
+            <DescriptionEditor formData={formData} setFormData={setFormData} />
           </div>
 
-          {/* Current Images Section */}
           <div>
-            <label className="block text-sm font-medium text-secondary-content mb-1">
-              Current Images
-            </label>
-            <div className="grid grid-cols-5 gap-2 mb-4">
+            <label className="block text-sm font-medium text-gray-800 mb-1">Existing Images</label>
+            <div className="flex gap-4 overflow-x-auto pb-2">
               {existingImages.map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`Product ${index + 1}`}
-                  className="w-full h-20 object-fill rounded"
-                />
+                <div key={index} className="relative">
+                  <img
+                    src={img}
+                    alt={`Existing image ${index + 1}`}
+                    className="w-24 h-24 object-cover rounded-lg"
+                  />
+                </div>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-secondary-content mb-1">
-              Upload New Images (Optional)
+            <label className="block text-sm font-medium text-gray-800 mb-1">
+              Upload New Images (Max 5, will replace existing)
             </label>
             <input
               type="file"
               accept="image/*"
               multiple
               onChange={handleImageChange}
-              className="w-full border border-secondary-content rounded-lg p-2 text-secondary-content"
+              className="w-full border border-gray-700 rounded-lg p-2 text-gray-900"
             />
           </div>
 
@@ -325,14 +348,14 @@ const EditProductModal = ({ isOpen, onClose, product, onProductUpdated }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-error rounded-lg text-error-content hover:bg-error"
+              className="px-4 py-2 border border-red-600 rounded-lg text-red-600 hover:bg-red-600 hover:text-white"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-warning text-warning-content rounded-lg hover:bg-warning-focus disabled:opacity-50"
+              className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800 disabled:opacity-50"
             >
               {loading ? "Updating..." : "Update Product"}
             </button>

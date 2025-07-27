@@ -6,12 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --env-file=.env index.js",
-   "seed": "node --env-file=.env ./src/seeder/adminSeeder.js"
+    "seed": "node --env-file=.env ./src/seeder/adminSeeder.js"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@react-pdf/renderer": "^4.3.0",
     "bcrypt": "^5.1.1",
     "cloudinary": "^2.6.0",
     "cookie-parser": "^1.4.7",
@@ -19,6 +20,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.0",
+    "mongoose-paginate-v2": "^1.9.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.2"
   },
