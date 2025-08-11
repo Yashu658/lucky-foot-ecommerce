@@ -27,8 +27,6 @@ const Home = () => {
   const [wishlist, setWishlist] = useState([]);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [userId, setUserId] = useState(null);
-  const [sliderOffers, setSliderOffers] = useState([]);
-  const [sliderLoading, setSliderLoading] = useState(true);
   const [offers, setOffers] = useState({
     slider: [],
     page: [],
@@ -120,22 +118,9 @@ const Home = () => {
     }
   };
 
-  //  const fetchSliderOffers = async () => {
-  //   try {
-  //     const response = await axios.get('/api/active');
-  //     setSliderOffers(response.data.offers || []);
-  //   } catch (error) {
-  //     console.error('Failed to fetch slider offers:', error);
-  //     toast.error('Failed to load offers');
-  //     setSliderOffers([]); // Set empty array on error
-  //   } finally {
-  //     setSliderLoading(false);
-  //   }
-  // };
+  
 
-  // useEffect(() => {
-  //   fetchSliderOffers();
-  // }, []);
+ 
 
   const fetchAllActiveOffers = async () => {
     try {
@@ -167,11 +152,11 @@ const Home = () => {
 
 
 
-  const openProductModal = (product) => {
-    setSelectedProduct(product);
-    setModalAction("view"); // for viewing only
-    setIsViewModalOpen(true);
-  };
+  // const openProductModal = (product) => {
+  //   setSelectedProduct(product);
+  //   setModalAction("view"); // for viewing only
+  //   setIsViewModalOpen(true);
+  // };
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -18,46 +18,47 @@ const ReviewPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [orderStatus, setOrderStatus] = useState(null);
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);
-const [isLoadingRating, setIsLoadingRating] = useState(true);
-  
+  const [isLoadingRating, setIsLoadingRating] = useState(true);
 
+  useEffect(() => {
+    const fetchOrderStatus = async () => {
+      try {
+        const res = await axios.get(
+          `/api/orders/status?productId=${productId}`,
+          {
+            credentials: "include",
+          }
+        );
 
+        const status = res.data.orderStatus;
+        const allowedStatuses = [
+          "Delivered",
+          "ReplacementRequested",
+          "ReplacementApproved",
+          "ReplacementShipped",
+          "ReplacementCompleted",
+          "ReplacementRejected",
+        ];
 
-useEffect(() => {
-  const fetchOrderStatus = async () => {
-    try {
-      const res = await axios.get(`/api/orders/status?productId=${productId}`, {
-        credentials: "include",
-      });
+        if (!allowedStatuses.includes(status)) {
+          // Redirect back if status doesn't allow reviews
+          navigate(-1);
+          toast.error(
+            "This product isn't eligible for review based on its current status."
+          );
+        }
 
-      const status = res.data.orderStatus;
-      const allowedStatuses = [
-        "Delivered",
-        "ReplacementRequested",
-        "ReplacementApproved",
-        "ReplacementShipped",
-        "ReplacementCompleted",
-        "ReplacementRejected",
-      ];
-
-      if (!allowedStatuses.includes(status)) {
-        // Redirect back if status doesn't allow reviews
+        setOrderStatus(status);
+      } catch (error) {
+        console.error("Error fetching order status:", error);
+        setOrderStatus("UNKNOWN");
         navigate(-1);
-        toast.error("This product isn't eligible for review based on its current status.");
+        toast.error("Failed to verify review eligibility.");
       }
+    };
 
-      setOrderStatus(status);
-    } catch (error) {
-      console.error("Error fetching order status:", error);
-      setOrderStatus("UNKNOWN");
-      navigate(-1);
-      toast.error("Failed to verify review eligibility.");
-    }
-  };
-
-  fetchOrderStatus();
-}, [productId, navigate]);
-
+    fetchOrderStatus();
+  }, [productId, navigate]);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -66,9 +67,9 @@ useEffect(() => {
         const reviewsRes = await axios.get(`/api/reviews/product/${productId}`);
 
         // Fetch average rating and count
-         const ratingRes = await axios.get(`/api/reviews/average/${productId}`);
-    setAverageRating(ratingRes.data.averageRating || 0);
-    setReviewCount(ratingRes.data.count || 0);
+        const ratingRes = await axios.get(`/api/reviews/average/${productId}`);
+        setAverageRating(ratingRes.data.averageRating || 0);
+        setReviewCount(ratingRes.data.count || 0);
         // Check if user has already reviewed
         const userRes = await axios.get(
           `/api/reviews/check?productId=${productId}`,
@@ -80,10 +81,10 @@ useEffect(() => {
         if (userRes.data?.reviewed) {
           setUserReview(userRes.data.review);
           // Filter out user's own review from the reviews list
-    const allReviews = reviewsRes.data.reviews || []; // Adjust key based on actual response
-const filteredReviews = allReviews.filter(
-  (r) => r._id !== userRes.data.review._id
-);
+          const allReviews = reviewsRes.data.reviews || []; // Adjust key based on actual response
+          const filteredReviews = allReviews.filter(
+            (r) => r._id !== userRes.data.review._id
+          );
 
           setReviews(filteredReviews);
         } else {
@@ -122,29 +123,28 @@ const filteredReviews = allReviews.filter(
     setImages(newImages);
   };
 
-
   useEffect(() => {
-  return () => {
-    images.forEach(img => {
-      if (img.preview && img.isNew) {
-        URL.revokeObjectURL(img.preview);
-      }
-    });
-  };
-}, [images]);
+    return () => {
+      images.forEach((img) => {
+        if (img.preview && img.isNew) {
+          URL.revokeObjectURL(img.preview);
+        }
+      });
+    };
+  }, [images]);
 
   const submitReview = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     if (!comment.trim()) {
-  toast.error("Please write a review comment");
-  return;
-}
+      toast.error("Please write a review comment");
+      return;
+    }
 
-if (images.length > 5) {
-  toast.error("You can upload a maximum of 5 images");
-  return;
-}
+    if (images.length > 5) {
+      toast.error("You can upload a maximum of 5 images");
+      return;
+    }
 
     try {
       const formData = new FormData();
@@ -159,10 +159,10 @@ if (images.length > 5) {
       });
 
       const res = await axios.post("/api/reviews", formData, {
-        headers: { 
-        "Content-Type": "multipart/form-data",
-      },
-      withCredentials: true
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
       });
 
       if (res.data) {
@@ -174,12 +174,11 @@ if (images.length > 5) {
       }
     } catch (error) {
       console.error("Error submitting review:", error);
-       toast.error(error.response?.data?.message || "Failed to submit review");
+      toast.error(error.response?.data?.message || "Failed to submit review");
     } finally {
       setIsLoading(false);
     }
   };
-
 
   if (isLoading) {
     return (

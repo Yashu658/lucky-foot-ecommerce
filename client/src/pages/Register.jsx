@@ -86,6 +86,9 @@ const Register = () => {
     }
   };
 
+
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -94,6 +97,9 @@ const Register = () => {
       setErrors({ ...errors, [name]: null });
     }
   };
+
+
+
 
   const renderError = (field) => (
     errors[field] && <p className="text-sm text-red-500 mt-1">{errors[field]}</p>

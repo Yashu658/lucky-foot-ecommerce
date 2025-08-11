@@ -21,7 +21,6 @@ const Login = () => {
   const [activationError, setActivationError] = useState("");
   const [showBlockedModal, setShowBlockedModal] = useState(false);
 
-
   const allowedEmailRegex =
     /^[a-zA-Z0-9._%+-]+@(gmail\.com|luckyfoot\.com|orkut\.com|yahoo\.com)$/;
 
@@ -29,7 +28,6 @@ const Login = () => {
     const newErrors = {};
     const emailRegex =
       /^[a-zA-Z0-9._%+-]+@(gmail\.com|luckyfoot\.com|orkut\.com|yahoo\.com)$/;
-
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!emailRegex.test(formData.email)) {
@@ -38,7 +36,6 @@ const Login = () => {
     if (!formData.password) newErrors.password = "Password is required";
     else if (formData.password.length < 6)
       newErrors.password = "Password must be at least 6 characters";
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -50,12 +47,10 @@ const Login = () => {
     try {
       const res = await axios.post("/api/auth/login", formData);
       const userData = res.data.user;
-
       if (!res.data.success) {
         toast.error(res.data.message);
         return;
       }
-
       // Handle based on user status
       if (userData.status === "Inactive") {
         setActivationEmail(userData.email);
@@ -63,11 +58,9 @@ const Login = () => {
         toast.warning("Your account is inactive. Please activate it.");
         return;
       } else if (userData.status === "Blocked") {
-  setShowBlockedModal(true);
-  return;
-}
-
-
+        setShowBlockedModal(true);
+        return;
+      }
       // Proceed if status is active
       sessionStorage.setItem(
         "user",
@@ -76,14 +69,12 @@ const Login = () => {
       setUser(userData);
       setIsLogin(true);
       toast.success(res.data.message);
-
       if (userData.role === "Admin") {
         setIsAdmin(true);
         navigate("/adminDashboard");
       } else {
         navigate("/");
       }
-
       setFormData({ email: "", password: "" });
     } catch (error) {
       const errorMessage =
@@ -260,10 +251,9 @@ const Login = () => {
                     );
                     return;
                   }
-                    toast.success("Activation link sent to your email.");
-                    setShowActivationModal(false);
-                     navigate("/");
-                  
+                  toast.success("Activation link sent to your email.");
+                  setShowActivationModal(false);
+                  navigate("/");
                 }}
               >
                 Send Link
@@ -273,36 +263,36 @@ const Login = () => {
         </div>
       )}
 
-
       {showBlockedModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-    <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
-      <h3 className="text-xl font-semibold text-red-600 mb-3">Account Blocked</h3>
-      <p className="text-gray-700 mb-4">
-        Your account has been blocked due to suspicious activities.
-        Please contact support for assistance.
-      </p>
-      <div className="flex justify-end space-x-3">
-        <button
-          className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-          onClick={() => setShowBlockedModal(false)}
-        >
-          Cancel
-        </button>
-        <button
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          onClick={() => {
-            setShowBlockedModal(false);
-            navigate("/");
-          }}
-        >
-          Home
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
+            <h3 className="text-xl font-semibold text-red-600 mb-3">
+              Account Blocked
+            </h3>
+            <p className="text-gray-700 mb-4">
+              Your account has been blocked due to suspicious activities. Please
+              contact support for assistance.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                onClick={() => setShowBlockedModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={() => {
+                  setShowBlockedModal(false);
+                  navigate("/");
+                }}
+              >
+                Home
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -141,9 +141,7 @@ const Kids = () => {
     setIsViewModalOpen(true);
   };
 
-  // useEffect(() => {
-  //   console.log("Wishlist state updated:", wishlist);
-  // }, [wishlist]);
+
 
   //Split fetchProducts() and fetchWishlist() into separate useEffect blocks:
   useEffect(() => {
