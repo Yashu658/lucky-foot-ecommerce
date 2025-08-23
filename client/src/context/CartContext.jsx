@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const navigate = useNavigate(); // place this at the top of your component
+  const navigate = useNavigate(); 
   const { user, isLogin } = useAuth();
   const [cart, setCart] = useState([]);
   const [isCartLoading, setIsCartLoading] = useState(true);
