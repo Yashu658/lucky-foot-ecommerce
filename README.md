@@ -1,5 +1,3 @@
-# React + Vite
-
 # 🛒 LuckyFootwear – E-Commerce Platform
 
 ![React](https://img.shields.io/badge/Frontend-React-blue)
