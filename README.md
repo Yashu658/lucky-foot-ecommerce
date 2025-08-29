@@ -2,6 +2,13 @@
 
 # 🛒 LuckyFootwear – E-Commerce Platform
 
+![React](https://img.shields.io/badge/Frontend-React-blue)
+![Node.js](https://img.shields.io/badge/Backend-Node.js-green)
+![Express](https://img.shields.io/badge/Framework-Express-lightgrey)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
+![TailwindCSS](https://img.shields.io/badge/UI-TailwindCSS-06B6D4)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
 A full-stack **e-commerce web application** built using the **MERN stack** with modern UI design powered by **Tailwind CSS**.  
 This project includes core e-commerce features like product catalog, search/filter, cart, checkout, authentication, order management, and an **admin dashboard** for business operations.
 
