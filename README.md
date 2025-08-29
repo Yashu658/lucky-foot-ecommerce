@@ -43,32 +43,32 @@ This project includes core e-commerce features like product catalog, search/filt
 ## Screenshots
 
 ###  Admin Dashboard  
-![Admin Dashboard](./screenshots/admin.png)
-![Admin Dashboard](./screenshots/products.png)
-![Admin Dashboard](./screenshots/orders.png)
-![Admin Dashboard](./screenshots/transactions.png)
+![Admin Dashboard](./client/screenshots/admin.png)
+![Admin Dashboard](./client/screenshots/products.png)
+![Admin Dashboard](./client/screenshots/orders.png)
+![Admin Dashboard](./client/screenshots/transactions.png)
 
 ### Home Page  
-![Home Page](./screenshots/home1.png)  
-![Home Page](./screenshots/recentlyviewed.png) 
+![Home Page](./client/screenshots/home1.png)  
+![Home Page](./client/screenshots/recentlyviewed.png) 
 
 ### Product Page  
-![Product Page](./screenshots/product.png) 
-![Product Page](./screenshots/productdetails.png)  
-![Product Page](./screenshots/review&relatedproducts.png) 
+![Product Page](./client/screenshots/product.png) 
+![Product Page](./client/screenshots/productdetails.png)  
+![Product Page](./client/screenshots/review&relatedproducts.png) 
 
 ### Cart Page  
-![Cart Page](./screenshots/cart.png)
-![Cart Page](./screenshots/cart1.png)
+![Cart Page](./client/screenshots/cart.png)
+![Cart Page](./client/screenshots/cart1.png)
 
 ### Checkout Page  
-![Checkout Page](./screenshots/buy.png)  
-![Checkout Page](./screenshots/placeorder.png) 
-![Checkout Page](./screenshots/checkout.png) 
-![Checkout Page](./screenshots/thankyoupage.png)
+![Checkout Page](./client/screenshots/buy.png)  
+![Checkout Page](./client/screenshots/placeorder.png) 
+![Checkout Page](./client/screenshots/checkout.png) 
+![Checkout Page](./client/screenshots/thankyoupage.png)
 
 ### Order Page  
-![Order Page](./screenshots/order-page.png)
-![Order Page](./screenshots/bill.png)
-![Order Page](./screenshots/invoice1.png)
+![Order Page](./client/screenshots/order-page.png)
+![Order Page](./client/screenshots/bill.png)
+![Order Page](./client/screenshots/invoice1.png)
 
